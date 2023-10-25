@@ -26,7 +26,7 @@ class Role
         return $this->role_name;
     }
 
-    public function setRoleName(string $role_name): static
+    public function setRoleName(string $role_name)
     {
         $this->role_name = $role_name;
 

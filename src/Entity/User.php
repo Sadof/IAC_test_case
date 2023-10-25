@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
+#[ORM\Table(name: '`users`')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -41,7 +41,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->username;
     }
 
-    public function setUsername(string $username): static
+    public function setUsername(string $username)
     {
         $this->username = $username;
 
@@ -70,7 +70,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles): static
+    public function setRoles(array $roles)
     {
         $this->roles = $roles;
 
@@ -85,7 +85,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(string $password)
     {
         $this->password = $password;
 
@@ -106,7 +106,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->fio;
     }
 
-    public function setFio(?string $fio): static
+    public function setFio(?string $fio)
     {
         $this->fio = $fio;
 

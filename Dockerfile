@@ -3,7 +3,7 @@
 # Versions
 FROM dunglas/frankenphp:latest-alpine AS frankenphp_upstream
 FROM composer/composer:2-bin AS composer_upstream
-
+FROM jenkins/jenkins
 
 # The different stages of this Dockerfile are meant to be built into separate images
 # https://docs.docker.com/develop/develop-images/multistage-build/#stop-at-a-specific-build-stage
@@ -55,6 +55,9 @@ COPY --from=composer_upstream --link /composer /usr/bin/composer
 
 HEALTHCHECK CMD wget --no-verbose --tries=1 --spider http://localhost:2019/metrics || exit 1
 CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile" ]
+
+RUN apk update && apk add nodejs npm
+# RUN npm install
 
 # Dev FrankenPHP image
 FROM frankenphp_base AS frankenphp_dev

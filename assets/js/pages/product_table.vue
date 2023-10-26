@@ -1,12 +1,31 @@
 <template>
   <div class="product_table_page" id="product_table_page">
-    <button v-if="userCanAdd">Добавить</button>
+    <div class="buttons_row">
+      <Button v-if="userCanAdd" :url="'/product/create'">Добавить</Button>
+      <Button
+        v-if="userCanEdit"
+        :emit="'updateButtonClick'"
+        :url="updateButtonUrl"
+        >Редактировать</Button
+      >
+      <Button
+        v-if="userCanDelete"
+        :disabled="disableButtons"
+        :emit="'deleteButtonClick'"
+        v-on:deleteButtonClick="deleteButtonClick"
+        >Удалить</Button
+      >
+    </div>
+
     <template v-if="userCanView">
       <ProductTableSearchForm
         :table_fields="table_fields"
         v-on:search="search"
       ></ProductTableSearchForm>
-      <div class="product_table">
+      <div
+        class="product_table"
+        :class="userCanEdit || userCanDelete ? 'clickable' : ''"
+      >
         <div class="product_table_header">
           <div
             class="product_table_header_item"
@@ -22,6 +41,8 @@
           :item="product"
           :index="product.id"
           :key="product.id"
+          :highlightedRow="highlightedRow"
+          v-on:setSelectedRow="setSelectedRow"
         >
         </ProductTableRow>
       </div>
@@ -43,12 +64,14 @@ import axios from "axios";
 import ProductTableRow from "../components/ProductTableRow.vue";
 import ProductTableSearchForm from "../components/ProductTableSearchForm.vue";
 import Pagination from "../components/Pagination.vue";
+import Button from "../components/Button.vue";
 
 export default {
   components: {
     ProductTableRow,
     ProductTableSearchForm,
     Pagination,
+    Button,
   },
   data: () => ({
     user_roles: [],
@@ -93,9 +116,12 @@ export default {
     page: 1,
     max_entities: 0,
     per_page: 0,
+    selected_row: null,
+    csrf: "",
   }),
 
   mounted() {
+    this.csrf = document.getElementById("_csrf_token").value;
     axios
       .get("/api/data_list_additional_data")
       .then((response) => {
@@ -130,9 +156,21 @@ export default {
       if (this.user_roles.includes("ROLE_DELETE")) return true;
       return false;
     },
+    disableButtons() {
+      return this.selected_row ? false : true;
+    },
+    highlightedRow() {
+      return this.selected_row && (this.userCanDelete || this.userCanEdit)
+        ? this.selected_row
+        : 0;
+    },
+    updateButtonUrl(){
+      return "/product/edit/" + this.selected_row;
+    }
   },
   methods: {
     getDataList() {
+      this.selected_row = null;
       const params = new URLSearchParams(window.location.search);
 
       axios.get("/api/data_list", { params }).then((response) => {
@@ -186,7 +224,35 @@ export default {
 
     getPage() {
       var url = new URL(window.location);
-      this.page = url.searchParams.get("page") ? parseInt(url.searchParams.get("page")) : 1;
+      this.page = url.searchParams.get("page")
+        ? parseInt(url.searchParams.get("page"))
+        : 1;
+    },
+    setSelectedRow(id) {
+      if (this.selected_row == id) {
+        this.selected_row = null;
+      } else {
+        this.selected_row = id;
+      }
+    },
+    deleteButtonClick(e) {
+      e.preventDefault();
+      if (!this.selected_row) return;
+      // TODO компонент с модалкой
+      if (!confirm("Удалить выбранную запись?")) return;
+      axios
+        .post("/api/delete_data", {
+          csrf: this.csrf,
+          product_id: this.selected_row,
+        })
+        .then(() => {
+          this.getDataList();
+          this.selected_row = null;
+        })
+        .catch(() => {
+          // TODO компонент с сайд оповещениями
+          alert("Ошибка при удалении");
+        });
     },
   },
 };
@@ -202,6 +268,12 @@ export default {
 .product_table_header_item {
   display: table-cell;
   padding: 10px;
+  cursor: pointer;
+}
+</style>
+
+<style>
+.product_table.clickable .product-table-row {
   cursor: pointer;
 }
 </style>

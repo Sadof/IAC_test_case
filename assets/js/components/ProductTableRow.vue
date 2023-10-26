@@ -1,5 +1,6 @@
 <template>
-  <div class="product-table-row">
+  <div class="product-table-row" :data-product-id="item.id" @click="$emit('setSelectedRow', item.id)"
+    :class="(highlightedRow == item.id) ? 'highlightedRow':''">
     <div class="product-table-row-item">
       {{ item.short_description }}
     </div>
@@ -19,10 +20,10 @@
       {{ item.updated }}
     </div>
     <div class="product-table-row-item">
-      {{ item.product_color.name }}
+      {{ item.product_color ? item.product_color.name : "" }}
     </div>
     <div class="product-table-row-item">
-      {{ item.product_category.name }}
+      {{ item.product_category ? item.product_category.name : "" }}
     </div>
   </div>
 </template>
@@ -30,6 +31,7 @@
 <script setup>
 const props = defineProps({
   item: Object,
+  highlightedRow: Number,
 });
 </script>
 
@@ -40,5 +42,8 @@ const props = defineProps({
 .product-table-row-item {
   display: table-cell;
   padding: 10px;
+}
+.highlightedRow{
+  background-color: rgb(212, 212, 212);
 }
 </style>

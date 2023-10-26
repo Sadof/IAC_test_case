@@ -75,6 +75,8 @@ class ProductRepository extends ServiceEntityRepository
         }
         if ($request->query->has("sort_field") && $request->query->has("order")) {
             $query->orderBy("c." . $request->query->get("sort_field"), $request->query->get("order") == 1 ? "DESC" : "ASC");
+        } else {
+            $query->orderBy("c.id", "DESC");
         }
 
         $page = $request->query->get("page", 1) - 1;
@@ -84,7 +86,6 @@ class ProductRepository extends ServiceEntityRepository
                 ->setFirstResult($offset);
         }
         $query->getQuery();
-        // dd($query);
         return new Paginator($query);
     }
     //    /**

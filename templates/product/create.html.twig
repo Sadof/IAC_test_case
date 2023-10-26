@@ -3,22 +3,22 @@
 {% block title %}Hello ProductController!{% endblock %}
 
 {% block body %}
- <div id="app"></div>
- <input
+  <div id="app"></div>
+  <input
       type="hidden"
       name="_csrf_token"
-      value="{{ csrf_token('product_delete') }}"
+      value="{{ csrf_token('product_edit') }}"
       id="_csrf_token"
     />
 {% endblock %}
 
 {% block javascripts %}
-  {{ parent() }}
-  {{ encore_entry_script_tags("products")}}
+{{ parent() }}
+  {{ encore_entry_script_tags("product_edit")}}
 {% endblock %}
 
 
 {% block stylesheets %}
-  {{ parent() }}
-  {{ encore_entry_link_tags("products")}}
+{{ parent() }}
+  {{ encore_entry_link_tags("product_edit")}}
 {% endblock %}

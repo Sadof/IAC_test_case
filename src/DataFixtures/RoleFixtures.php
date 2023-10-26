@@ -11,7 +11,6 @@ class RoleFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $role_names = ["ROLE_LIST_VIEW", "ROLE_ADD", "ROLE_EDIT", "ROLE_DELETE"];
-        // $role_name = "ROLE_LIST_VIEW";
         foreach ($role_names as $role_name){
             $role = new Role();
             $role->setRoleName($role_name);

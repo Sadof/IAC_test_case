@@ -52,7 +52,14 @@
       <template
         v-else-if="table_fields[selected_search_field]['search_type'] == 'date'"
       >
-        <date-picker v-model="selected_search_value" range type="date" format="YYYY-MM-DD" range-separator="-" value-type="format"></date-picker>
+        <date-picker
+          v-model="selected_search_value"
+          range
+          type="date"
+          format="YYYY-MM-DD"
+          range-separator="-"
+          value-type="format"
+        ></date-picker>
       </template>
 
       <button @click="checkInput">Поиск</button>
@@ -88,11 +95,10 @@ export default {
   computed: {},
   methods: {
     checkInput() {
-        this.$emit("search", {
-          search_field: this.selected_search_field,
-          search_value: this.selected_search_value,
-        });
-      
+      this.$emit("search", {
+        search_field: this.selected_search_field,
+        search_value: this.selected_search_value,
+      });
     },
   },
 };

@@ -27,35 +27,27 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['conference:list', 'conference:item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['conference:list', 'conference:item'])]
     private ?string $short_description = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['conference:list', 'conference:item'])]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['conference:list', 'conference:item'])]
     private ?int $amount = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    #[Groups(['conference:list', 'conference:item'])]
     private ?\DateTimeInterface $added_to_store = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups(['conference:list', 'conference:item'])]
     private ?\DateTimeInterface $updated = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
-    #[Groups(['conference:list', 'conference:item'])]
     private ?ProductCategory $product_category = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
-    #[Groups(['conference:list', 'conference:item'])]
     private ?ProductColor $product_color = null;
 
     #[ORM\Column(length: 1000, nullable: true)]
@@ -114,7 +106,7 @@ class Product
 
     public function getAddedToStore()
     {
-        return $this->added_to_store->format("d-m-Y");
+        return $this->added_to_store ? $this->added_to_store->format("Y-m-d") : null ;
     }
 
     public function setAddedToStore(?\DateTimeInterface $added_to_store): static
@@ -126,7 +118,7 @@ class Product
 
     public function getUpdated()
     {
-        return $this->updated->format("H:i:s d-m-Y");
+        return $this->updated ? $this->updated->format("Y-m-d H:d:s") : null ;
     }
 
     public function setUpdated(?\DateTimeInterface $updated): static

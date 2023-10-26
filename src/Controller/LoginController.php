@@ -17,7 +17,7 @@ class LoginController extends AbstractController
         ): Response
     {
         if ($user) {
-            return $this->redirectToRoute('app_product');
+            return $this->redirectToRoute('product');
         }
 
         $error = $authenticationUtils->getLastAuthenticationError();
@@ -34,7 +34,6 @@ class LoginController extends AbstractController
     #[Route('/logout', name: 'app_logout', methods: ['GET'])]
     public function logout(): never
     {
-        // controller can be blank: it will never be called!
         throw new \Exception('Don\'t forget to activate logout in security.yaml');
     }
 }

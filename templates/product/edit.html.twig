@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Редактирование продукта{% endblock %}
+
+{% block body %}
+  <div id="app"></div>
+  <input
+      type="hidden"
+      name="_csrf_token"
+      value="{{ csrf_token('product_edit') }}"
+      id="_csrf_token"
+    />
+  <input
+      type="hidden"
+      value="{{ product_id }}"
+      id="product_id"
+    />
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+  {{ encore_entry_script_tags("product_edit")}}
+{% endblock %}
+
+
+{% block stylesheets %}
+{{ parent() }}
+  {{ encore_entry_link_tags("product_edit")}}
+{% endblock %}

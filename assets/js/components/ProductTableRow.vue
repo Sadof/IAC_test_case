@@ -1,6 +1,10 @@
 <template>
-  <div class="product-table-row" :data-product-id="item.id" @click="$emit('setSelectedRow', item.id)"
-    :class="(highlightedRow == item.id) ? 'highlightedRow':''">
+  <div
+    class="product-table-row"
+    :data-product-id="item.id"
+    @click="$emit('setSelectedRow', item.id)"
+    :class="highlightedRow == item.id ? 'highlightedRow' : ''"
+  >
     <div class="product-table-row-item">
       {{ item.short_description }}
     </div>
@@ -43,7 +47,7 @@ const props = defineProps({
   display: table-cell;
   padding: 10px;
 }
-.highlightedRow{
+.highlightedRow {
   background-color: rgb(212, 212, 212);
 }
 </style>

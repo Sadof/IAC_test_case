@@ -1,5 +1,10 @@
 <template>
-  <a v-if="emit" :href="url" class="button" :class="{ disabled: disabled }" @click="$emit(emit, $event)"
+  <a
+    v-if="emit"
+    :href="url"
+    class="button"
+    :class="{ disabled: disabled }"
+    @click="$emit(emit, $event)"
     ><slot></slot
   ></a>
   <a v-else :href="url" class="button" :class="{ disabled: disabled }"

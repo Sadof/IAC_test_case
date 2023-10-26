@@ -42,11 +42,8 @@ class ProductFixture extends Fixture
             $product->setBlob("get");
             
             $manager->persist($product);
-            
             $manager->flush();
         }
-        
-        
     }
 
     public function getDependencies()

@@ -167,9 +167,9 @@ export default {
         ? this.selected_row
         : 0;
     },
-    updateButtonUrl(){
+    updateButtonUrl() {
       return "/product/edit/" + this.selected_row;
-    }
+    },
   },
   methods: {
     getDataList() {
@@ -244,10 +244,18 @@ export default {
       // TODO компонент с модалкой
       if (!confirm("Удалить выбранную запись?")) return;
       axios
-        .post("/api/delete_data", {
-          csrf: this.csrf,
-          product_id: this.selected_row,
-        })
+        .post(
+          "/api/delete_data",
+          {
+            csrf_token: this.csrf,
+            product_id: this.selected_row,
+          },
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
         .then(() => {
           this.getDataList();
           this.selected_row = null;

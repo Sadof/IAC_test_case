@@ -1,7 +1,13 @@
 <template>
   <div class="pagination">
-      <div v-for="index in pages" :key="'pagination_key_' + index" class="pagination_item" :class="(index == page) ? 'pagination_item_current': ''" @click="changePage(index)">
-        {{ index }}
+    <div
+      v-for="index in pages"
+      :key="'pagination_key_' + index"
+      class="pagination_item"
+      :class="index == page ? 'pagination_item_current' : ''"
+      @click="changePage(index)"
+    >
+      {{ index }}
     </div>
   </div>
 </template>

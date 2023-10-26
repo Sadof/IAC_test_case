@@ -126,8 +126,12 @@
         />
       </div>
       <div class="product_form_item">
-        <label for="blob">Блоб</label>
-        <input type="text" name="blob" v-model="product.blob" />
+        <label for="blob">Вложение</label>
+        <div class="product_form_item_blob" v-if="product.blob_name">
+          <div class="product_form_item_blob_name">{{ product.blob_name }}</div>
+          <div class="product_form_item_blob_download"> <a :href="'/api/get_data_blob/' + product.id">Download</a></div>
+        </div>
+        <input type="file" name="blob" id="blob" ref="blob_input" />
       </div>
 
       <button
@@ -175,6 +179,7 @@ export default {
       product_category: "",
       image: "",
       blob: "",
+      blob_name: "",
     },
     product_colors: [],
     product_categories: [],
@@ -216,6 +221,7 @@ export default {
         product_category: "",
         image: "",
         blob: "",
+        blob_name: "",
       };
     },
     setProduct(data) {
@@ -227,12 +233,11 @@ export default {
         weight: data.weight,
         added_to_store: data.added_to_store,
         updated: data.updated,
-        product_color: data.product_color ? data.product_color.id : null,
-        product_category: data.product_category
-          ? data.product_category.id
-          : null,
+        product_color: data.product_color ? data.product_color.id : "",
+        product_category: data.product_category ? data.product_category.id : "",
         image: data.image,
-        blob: data.blob ? data.blob : "",
+        blob: data.blob,
+        blob_name: data.blob_name,
       };
     },
     setEmptyErrors() {

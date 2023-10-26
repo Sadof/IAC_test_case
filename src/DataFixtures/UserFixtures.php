@@ -18,12 +18,16 @@ class UserFixtures extends Fixture
     }
     public function load(ObjectManager $manager): void
     {
-        $names = ["ROLE_LIST_VIEW" => ["ROLE_LIST_VIEW"], "ROLE_ADD" => ["ROLE_ADD"],
-         "ROLE_EDIT" => ["ROLE_LIST_VIEW","ROLE_EDIT"], "ROLE_DELETE"  => ["ROLE_LIST_VIEW","ROLE_DELETE"]];
+        $names = [
+            "ROLE_LIST_VIEW" => ["ROLE_LIST_VIEW"],
+            "ROLE_ADD" => ["ROLE_ADD"],
+            "ROLE_EDIT" => ["ROLE_LIST_VIEW", "ROLE_EDIT"],
+            "ROLE_DELETE" => ["ROLE_LIST_VIEW", "ROLE_DELETE"]
+        ];
         $faker = Factory::create("ru_RU");
         $plaintextPassword = "Qwerty123";
-        
-        foreach ($names as $name => $roles){
+
+        foreach ($names as $name => $roles) {
             $user = new User();
             $user->setUsername($name);
             $hashedPassword = $this->passwordHasher->hashPassword(
@@ -37,6 +41,5 @@ class UserFixtures extends Fixture
         }
 
         $manager->flush();
-        
     }
 }

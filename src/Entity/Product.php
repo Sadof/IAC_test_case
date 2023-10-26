@@ -63,6 +63,9 @@ class Product
     #[Groups(['conference:list', 'conference:item'])]
     private ?float $weight = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $blob_name = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -184,6 +187,18 @@ class Product
     public function setWeight(?float $weight): static
     {
         $this->weight = $weight;
+
+        return $this;
+    }
+
+    public function getBlobName(): ?string
+    {
+        return $this->blob_name;
+    }
+
+    public function setBlobName(?string $blob_name): static
+    {
+        $this->blob_name = $blob_name;
 
         return $this;
     }

@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20231024073314 extends AbstractMigration
+final class Version20231026102557 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -31,28 +31,28 @@ final class Version20231024073314 extends AbstractMigration
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\PostgreSQL100Platform'."
         );
 
-        $this->addSql('CREATE TABLE product_color (id INT NOT NULL, color_name VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
-        $this->abortIf(
-            !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\PostgreSQL100Platform,
-            "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\PostgreSQL100Platform'."
-        );
-
-        $this->addSql('CREATE TABLE product_category (id INT NOT NULL, category_name VARCHAR(255) NOT NULL, parent_id INT DEFAULT NULL, PRIMARY KEY(id))');
-        $this->abortIf(
-            !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\PostgreSQL100Platform,
-            "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\PostgreSQL100Platform'."
-        );
-
-        $this->addSql('CREATE TABLE product (id INT NOT NULL, product_category_id INT NOT NULL, product_color_id INT DEFAULT NULL, short_description VARCHAR(255) DEFAULT NULL, description TEXT DEFAULT NULL, amount INT NOT NULL, added_to_store DATE DEFAULT NULL, updated TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, image VARCHAR(1000) DEFAULT NULL, blob BYTEA DEFAULT NULL, weight DOUBLE PRECISION DEFAULT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE INDEX idx_d34a04ada2a752fa ON product (product_color_id)');
-        $this->addSql('CREATE INDEX idx_d34a04adc41eaf32 ON product (product_category_id)');
-        $this->abortIf(
-            !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\PostgreSQL100Platform,
-            "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\PostgreSQL100Platform'."
-        );
-
         $this->addSql('CREATE TABLE users (id INT NOT NULL, username VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, fio VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX uniq_1483a5e9f85e0677 ON users (username)');
+        $this->abortIf(
+            !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\PostgreSQL100Platform,
+            "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\PostgreSQL100Platform'."
+        );
+
+        $this->addSql('CREATE TABLE product_category (id INT NOT NULL, name VARCHAR(255) NOT NULL, parent_id INT DEFAULT NULL, PRIMARY KEY(id))');
+        $this->abortIf(
+            !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\PostgreSQL100Platform,
+            "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\PostgreSQL100Platform'."
+        );
+
+        $this->addSql('CREATE TABLE product (id INT NOT NULL, product_category_id INT DEFAULT NULL, product_color_id INT DEFAULT NULL, short_description VARCHAR(255) DEFAULT NULL, description TEXT DEFAULT NULL, amount INT NOT NULL, added_to_store DATE DEFAULT NULL, updated TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, image VARCHAR(1000) DEFAULT NULL, blob BYTEA DEFAULT NULL, weight DOUBLE PRECISION DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE INDEX idx_d34a04adbe6903fd ON product (product_category_id)');
+        $this->addSql('CREATE INDEX idx_d34a04adb16a7522 ON product (product_color_id)');
+        $this->abortIf(
+            !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\PostgreSQL100Platform,
+            "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\PostgreSQL100Platform'."
+        );
+
+        $this->addSql('CREATE TABLE product_color (id INT NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
     }
 
     public function down(Schema $schema): void
@@ -69,7 +69,7 @@ final class Version20231024073314 extends AbstractMigration
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\PostgreSQL100Platform'."
         );
 
-        $this->addSql('DROP TABLE product_color');
+        $this->addSql('DROP TABLE users');
         $this->abortIf(
             !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\PostgreSQL100Platform,
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\PostgreSQL100Platform'."
@@ -87,6 +87,6 @@ final class Version20231024073314 extends AbstractMigration
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\PostgreSQL100Platform'."
         );
 
-        $this->addSql('DROP TABLE users');
+        $this->addSql('DROP TABLE product_color');
     }
 }

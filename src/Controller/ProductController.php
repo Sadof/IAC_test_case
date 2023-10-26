@@ -6,7 +6,7 @@ use App\Entity\Product;
 use App\Entity\ProductCategory;
 use App\Entity\ProductColor;
 use App\Repository\ProductRepository;
-use DateTime;
+use App\Service\ProductService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
 
 class ProductController extends AbstractController
@@ -44,15 +43,20 @@ class ProductController extends AbstractController
     }
 
     #[Route('/api/data_edit', name: 'api_data_edit')]
-    public function editProduct(Request $request, EntityManagerInterface $entityManager, ValidatorInterface $validator, LoggerInterface $logger): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        if (!$this->isCsrfTokenValid('product_edit', $data["csrf"])) {
+    public function editProduct(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        LoggerInterface $logger,
+        ProductService $product_service
+    ): JsonResponse {
+        if (!$this->isCsrfTokenValid('product_edit', $request->get("csrf_token"))) {
+            throw $this->createNotFoundException('The CSRF token is invalid. Please try to resubmit the form');
         }
 
-        $product_data = $data["product"];
-        if ($product_data["id"]) {
+        $product_data = $request->request->all();
+        $files = $request->files;
+
+        if ($product_data["id"] && $product_data["id"] != "null") {
             if (!in_array('ROLE_EDIT', $this->getUser()->getRoles(), true)) {
                 throw $this->createAccessDeniedException('Недостаточно прав для редактирования продукта');
             }
@@ -64,39 +68,29 @@ class ProductController extends AbstractController
                 );
             }
             try {
-                $product = $this->fillProduct($product_data, $entityManager, $product);
+                $product = $product_service->fillProduct($product_data, $files, $product);
             } catch (TypeError $e) {
                 $logger->error($e, ["user" => $this->getUser()]);
                 return $this->response("Ошибка создания продукта", 404);
+            } catch (Exception $e) {
+                $logger->error($e, ["user" => $this->getUser()]);
+                return $this->response("Ошибка создания продукта", 404);
             }
-
-            $errors = $validator->validate($product);
-            if (count($errors) > 0) {
-                $errorsString = (string) $errors;
-
-                return $this->response($errorsString, 404);
-            }
+            
 
             $entityManager->flush();
-
             return $this->response("Продукт изменен", 200);
         } else {
             if (!in_array('ROLE_ADD', $this->getUser()->getRoles(), true)) {
                 throw $this->createAccessDeniedException('Недостаточно прав для создания продукта');
             }
             try {
-                $product = $this->fillProduct($product_data, $entityManager);
+                $product = $product_service->fillProduct($product_data, $files);
             } catch (TypeError $e) {
                 $logger->error($e, ["user" => $this->getUser()]);
                 return $this->response("Ошибка создания продукта", 404);
             }
 
-            $errors = $validator->validate($product);
-            if (count($errors) > 0) {
-                $errorsString = (string) $errors;
-
-                return $this->response($errorsString, 404);
-            }
             $entityManager->persist($product);
             $entityManager->flush();
 
@@ -114,13 +108,19 @@ class ProductController extends AbstractController
         return $this->response($data);
     }
 
-    #[Route('/api/get_data', name: 'api_data_пуе')]
+    #[Route('/api/get_data', name: 'api_data_get')]
     #[IsGranted('ROLE_EDIT')]
     public function getProduct(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
         $product = $entityManager->getRepository(Product::class)->find($data["product_id"]);
+
+        if (!$product) {
+            throw $this->createNotFoundException(
+                'No product found for'
+            );
+        }
 
         $data = $serializer->serialize($product, 'json');
         return $this->response($data);
@@ -136,9 +136,13 @@ class ProductController extends AbstractController
             throw $this->createNotFoundException('The CSRF token is invalid. Please try to resubmit the form');
         }
 
-        try {
-            $product = $entityManager->getRepository(Product::class)->find($data["product_id"]);
-        } catch (Exception $e) {
+
+        $product = $entityManager->getRepository(Product::class)->find($data["product_id"]);
+
+        if (!$product) {
+            throw $this->createNotFoundException(
+                'No product found for'
+            );
         }
 
         $entityManager->remove($product);
@@ -163,24 +167,5 @@ class ProductController extends AbstractController
     private function response($data, $status = 200, $headers = [])
     {
         return new JsonResponse($data, $status, $headers);
-    }
-
-    private function fillProduct(array $product_data, EntityManagerInterface $entityManager,  Product $product = null): Product
-    {
-        if (!$product) {
-            $product = new Product();
-        }
-
-        $product->setShortDescription($product_data["short_description"]);
-        $product->setDescription($product_data["description"]);
-        $product->setAmount($product_data["amount"]);
-        $product->setWeight($product_data["weight"]);
-        $product->setAddedToStore(date_create($product_data["added_to_store"]));
-        $product->setUpdated(\DateTime::createFromFormat("Y-m-d H:i:s", $product_data["updated"]));
-        $product->setProductCategory($product_data["product_category"] ? $entityManager->getReference(ProductCategory::class, $product_data["product_category"]) : null);
-        $product->setProductColor($product_data["product_color"] ? $entityManager->getReference(ProductColor::class, $product_data["product_color"]) : null);
-        $product->setImage($product_data["image"]);
-        $product->setBlob($product_data["blob"]);
-        return $product;
     }
 }

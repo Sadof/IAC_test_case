@@ -17,13 +17,28 @@
     <template v-if="table_fields">
       <template
         v-if="
-          ['string', 'int', 'float'].includes(
+          ['string'].includes(
             table_fields[selected_search_field]['search_type']
           )
         "
       >
         <input
           type="text"
+          name="search_value"
+          id="search_value"
+          v-model="selected_search_value"
+          :data-check="table_fields[selected_search_field]['search_type']"
+        />
+      </template>
+      <template
+        v-else-if="
+          ['int', 'float'].includes(
+            table_fields[selected_search_field]['search_type']
+          )
+        "
+      >
+        <input
+          type="number"
           name="search_value"
           id="search_value"
           v-model="selected_search_value"

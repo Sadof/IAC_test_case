@@ -154,7 +154,7 @@ class Product
 
     public function getImage(): ?string
     {
-        return $this->image;
+        return $this->image ? "/uploads/" . $this->image : "";
     }
 
     public function setImage(?string $image): static

@@ -1,5 +1,6 @@
 <template>
   <div class="product_table_page" id="product_table_page">
+    <Header></Header>
     <div class="buttons_row">
       <Button v-if="userCanAdd" :url="'/product/create'">Добавить</Button>
       <Button
@@ -65,6 +66,7 @@ import ProductTableRow from "../components/ProductTableRow.vue";
 import ProductTableSearchForm from "../components/ProductTableSearchForm.vue";
 import Pagination from "../components/Pagination.vue";
 import Button from "../components/Button.vue";
+import Header from "../components/Header.vue";
 
 export default {
   components: {
@@ -72,6 +74,7 @@ export default {
     ProductTableSearchForm,
     Pagination,
     Button,
+    Header,
   },
   data: () => ({
     user_roles: [],

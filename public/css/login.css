@@ -1,6 +1,31 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
 .login_form {
-    padding: 20px;
+    width: 400px;
+    height: 150px;
+    margin: auto;
+    background: rgb(211 210 210);
+    border: 1px solid rgb(138, 138, 138);
+    padding: 50px;
     display: flex;
     flex-direction: column;
     margin: auto;
+    margin-top: calc((100vh - 150px) / 2);
+    justify-content: center;
+    align-items: center;
+}
+
+.login_form form {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+}
+
+.login_form form input {
+    margin-bottom: 15px;
 }

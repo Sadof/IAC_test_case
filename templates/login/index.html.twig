@@ -6,22 +6,20 @@
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        <link href="{{ asset('styles/app.css') }}" rel="stylesheet"/>
-        <link href="{{ asset('styles/login.css') }}" rel="stylesheet"/>
+        <link href="{{ asset('css/login.css') }}" rel="stylesheet"/>
     </head>
     <body>
-        {% if error %}
+       
+        <div class="login_form">
+         {% if error %}
             <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
         {% endif %}
-        <div class="login_form">
-        <div class="login_header">
-        
-        </div>
         {% if is_granted('ROLE_USER') %}
             <div>
                 Вы уже вошли как {{ app.user.username }}
+                </div>
                 <a href="{{ path('app_logout')}}">Выйти</a>
-            </div>
+            
         {% else %}
         <form action="{{ path('app_login') }}" method="post">
             <label for="username">Username:</label>

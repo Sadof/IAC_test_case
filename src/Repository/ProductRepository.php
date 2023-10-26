@@ -46,7 +46,9 @@ class ProductRepository extends ServiceEntityRepository
                 if ($field_type == "string" || $field_type == "text") {
                     $query->andWhere("c.{$search_field} LIKE :value")
                         ->setParameter('value', '%' . $search_value . '%');
-                } else if ($field_type == "integer" || $field_type == "float") {
+                } else if (($field_type == "integer" && filter_var($search_value, FILTER_VALIDATE_INT) !== false)
+                    || ($field_type == "float" && filter_var($search_value, FILTER_VALIDATE_FLOAT) !== false)
+                ) {
                     $query->andWhere("c.{$search_field} = :value")
                         ->setParameter('value', $search_value);
                 } else if ($field_type == "date" || $field_type == "datetime") {
@@ -62,6 +64,7 @@ class ProductRepository extends ServiceEntityRepository
                             $to = date($dates[0]);
                         }
                         $query->where("c.{$search_field} BETWEEN :from AND :to")
+                            ->setParameter('from', $from . ' 00:00:00')
                             ->setParameter('from', $from . ' 00:00:00')
                             ->setParameter('to', $to . ' 23:59:59');
                     }

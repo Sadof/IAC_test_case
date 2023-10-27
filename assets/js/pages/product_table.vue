@@ -254,6 +254,7 @@ export default {
 <style scoped>
 .product_table_header_item {
   cursor: pointer;
+  text-wrap: nowrap;
 }
 .product_table_header_item.down::after {
   content: "\25bc";

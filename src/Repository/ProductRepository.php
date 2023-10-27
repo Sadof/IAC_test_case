@@ -83,7 +83,13 @@ class ProductRepository extends ServiceEntityRepository
             }
         }
         if ($request->query->has("sort_field") && $request->query->has("order")) {
-            $query->orderBy("c." . $request->query->get("sort_field"), $request->query->get("order") == 1 ? "DESC" : "ASC");
+            $sort_field = $request->query->get("sort_field");
+            $order = $request->query->get("order");
+            if (array_key_exists($request->query->get("sort_field"), $associationMappings)) {
+                $query->leftJoin("c." . $sort_field, $sort_field)->orderBy($sort_field . ".name", $order == 1 ? "DESC" : "ASC");
+            } else {
+                $query->orderBy("c." . $sort_field, $order == 1 ? "DESC" : "ASC");
+            }
         } else {
             $query->orderBy("c.id", "DESC");
         }

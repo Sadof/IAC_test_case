@@ -39,14 +39,15 @@ class ProductRepository extends ServiceEntityRepository
     {
 
         $query = $this->createQueryBuilder('c');
+        $fieldMappings = $this->entityManager->getClassMetadata(Product::class)->fieldMappings;
+        $associationMappings = $this->entityManager->getClassMetadata(Product::class)->associationMappings;
+        
         if (
             $request->query->has("search_field") && $request->query->has("search_value") &&
             $request->query->get("search_field") && $request->query->get("search_value")
         ) {
             $search_field = $request->query->get("search_field");
             $search_value = $request->query->get("search_value");
-            $fieldMappings = $this->entityManager->getClassMetadata(Product::class)->fieldMappings;
-            $associationMappings = $this->entityManager->getClassMetadata(Product::class)->associationMappings;
             if (array_key_exists($search_field, $fieldMappings)) {
                 $field_type = $fieldMappings[$search_field]["type"];
                 if ($field_type == "string" || $field_type == "text") {

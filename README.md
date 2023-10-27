@@ -1,48 +1,51 @@
-# Symfony Docker
+Для установки требуется скачать репозиторий из гитхаба
+git clone https://github.com/Sadof/IAC_test_case.git
+Либо этот же репозиторий будет в архиве.
+Из основной директории репозитория выполнить команды:
+docker compose build --no-cache
+docker compose up -d --wait
+docker exec -it iac_test_case-php-1 /bin/sh
+npm install
+npm run build
+php bin/console doctrine:fixtures:load
 
-A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
-with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!
 
-![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
+Перейти на https://localhost
 
-## Getting Started
+Для данного задания используется докер из вики symfony
 
-1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
-2. Run `docker compose build --no-cache` to build fresh images
-3. Run `docker compose up --pull -d --wait` to start the project
-4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
-5. Run `docker compose down --remove-orphans` to stop the Docker containers.
+Сделано:
+На бэке:
+- Добавлены базы с продуктами, каталогами(цветов и категорий) и роли.
+*В Product поле updated не является стандартным полем, а является примером “ Поле с датой и временем” с неудачным названием.
+- Добавлены фикстуры для заполнения баз данных. 
 
-## Features
+Для создания таблиц используется система миграций Doctrine.
 
-* Production, development and CI ready
-* Just 1 service by default
-* Blazing-fast performance thanks to [the worker mode of FrankenPHP](https://github.com/dunglas/frankenphp/blob/main/docs/worker.md) (automatically enabled in prod mode)
-* [Installation of extra Docker Compose services](docs/extra-services.md) with Symfony Flex
-* Automatic HTTPS (in dev and prod)
-* HTTP/3 and [Early Hints](https://symfony.com/blog/new-in-symfony-6-3-early-hints) support
-* Real-time messaging thanks to a built-in [Mercure hub](https://symfony.com/doc/current/mercure.html)
-* [Vulcain](https://vulcain.rocks) support
-* Native [XDebug](docs/xdebug.md) integration
-* Super-readable configuration
+При заполнение базы создаются 4 роли:
 
-**Enjoy!**
+ROLE_LIST_VIEW - с ролью ROLE_LIST_VIEW(возможен только просмотр таблицы)
 
-## Docs
+ROLE_ADD - с ролью ROLE_ADD(возможен только добавление продукта)
 
-1. [Build options](docs/build.md)
-2. [Using Symfony Docker with an existing project](docs/existing-project.md)
-3. [Support for extra services](docs/extra-services.md)
-4. [Deploying in production](docs/production.md)
-5. [Debugging with Xdebug](docs/xdebug.md)
-6. [TLS Certificates](docs/tls.md)
-7. [Using a Makefile](docs/makefile.md)
-8. [Troubleshooting](docs/troubleshooting.md)
+ROLE_EDIT - с ролями ROLE_LIST_VIEW и ROLE_EDIT(возможен просмотр 
+таблицы, и при клике на строку таблицы, кнопка “Редактировать” становится 
+активной и ведет на страницу редактирования выбранной записи)
 
-## License
+ROLE_DELETE - с ролями ROLE_LIST_VIEW и ROLE_DELETE(возможен просмотр 
+таблицы, и при клике на строку таблицы, кнопка “Удалить” становится 
+активной и при нажатие появляется confirm для удаления выбранной записи)
+У всех аккаунтов устанавливается пароль “Qwerty123”.
 
-Symfony Docker is available under the MIT License.
+-  Сделаны указанные апи методы для работы с продуктом
 
-## Credits
+На фронте:
 
-Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+
+- Vue не в виде spa, а подключается на отдельных страницах и bootstrap для оформления. К сожалению не было времени подключить vuex
+
+Проблемы:
+
+
+При “Error response from daemon: Ports are not available: listen tcp 0.0.0.0:80: bind: address already in use” выполнить команду “sudo service apache2 stop && sudo service nginx stop”
+

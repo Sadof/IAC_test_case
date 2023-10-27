@@ -180,9 +180,7 @@ class ProductService
      */
     public function deleteProduct(Request $request)
     {
-        $data = json_decode($request->getContent(), true);
-
-        $product = $this->entityManager->getRepository(Product::class)->find($data["product_id"]);
+        $product = $this->entityManager->getRepository(Product::class)->find($request->get("product_id"));
 
         if (!$product) {
             throw new Exception("Page not found", 404);

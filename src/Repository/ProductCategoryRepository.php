@@ -21,45 +21,21 @@ class ProductCategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, ProductCategory::class);
     }
 
+    /**
+     * Получение элементов древовидного справочника, неимеющий детей
+     *
+     * @return void
+     */
     public function getLowestLevel()
     {
-        $exclude = $this->createQueryBuilder('p')
-            ->select("p.parent_id")
-            ->groupBy('p.parent_id')
-            ->getQuery()
-            ->getResult();
+        $exclude = $this->createQueryBuilder('e')
+            ->select("e.parent_id")
+            ->where("e.parent_id IS NOT NULL")
+            ->distinct();
+            
+        $data = $this->createQueryBuilder('p');
+        $data->where($data->expr()->notIn('p.id', $exclude->getDQL()));
 
-        $exclude = array_column($exclude, 'parent_id');
-        $exclude = array_filter($exclude, fn ($value) => !is_null($value) && $value !== '');
-
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.id NOT IN (:exclude) AND p.parent_id IS NOT NULL')
-            ->setParameter('exclude', $exclude)
-            ->getQuery()
-            ->getResult();
+        return $data->getQuery()->getResult();
     }
-    //    /**
-    //     * @return ProductCategory[] Returns an array of ProductCategory objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?ProductCategory
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

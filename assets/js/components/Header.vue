@@ -1,12 +1,8 @@
 <template>
-  <div class="header">
-    <div class="header_menu">
-      <Button :url="'/'">Список</Button>
-    </div>
-    <div class="header_actions">
-      <Button :url="'/logout'">Logout</Button>
-    </div>
-  </div>
+  <b-nav tabs fill justified>
+    <b-nav-item href="/">Список</b-nav-item>
+    <b-nav-item href="/logout">Выйти</b-nav-item>
+  </b-nav>
 </template>
 <script>
 import Button from "../components/Button.vue";
@@ -17,10 +13,3 @@ export default {
   setup() {},
 };
 </script>
-
-<style scoped>
-.header {
-  display: flex;
-  justify-content: space-between;
-}
-</style>

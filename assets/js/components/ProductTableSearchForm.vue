@@ -4,6 +4,7 @@
       v-model="selected_search_field"
       name="search_field"
       id="search_field"
+      class="form-select search_field_select"
       @change="selected_search_value = ''"
     >
       <option
@@ -26,6 +27,7 @@
           type="text"
           name="search_value"
           id="search_value"
+          class="form-control search_value_select"
           v-model="selected_search_value"
           :data-check="table_fields[selected_search_field]['search_type']"
         />
@@ -41,6 +43,7 @@
           type="number"
           name="search_value"
           id="search_value"
+          class="form-control search_value_select"
           v-model="selected_search_value"
           :data-check="table_fields[selected_search_field]['search_type']"
         />
@@ -54,6 +57,7 @@
           v-model="selected_search_value"
           name="search_value"
           id="search_value"
+          class="form-select search_value_select"
         >
           <option
             v-bind:value="item.id"
@@ -77,7 +81,7 @@
         ></date-picker>
       </template>
 
-      <button @click="checkInput">Поиск</button>
+      <button @click="checkInput" class="btn btn-secondary">Поиск</button>
     </template>
   </div>
 </template>
@@ -126,5 +130,19 @@ export default {
 .product-table-row-item {
   display: table-cell;
   padding: 10px;
+}
+
+.product_table_search_form {
+  display: flex;
+  padding: 5px 20px;
+}
+
+.search_field_select {
+  width: 300px;
+  margin-right: 20px;
+}
+.search_value_select {
+  width: 300px;
+  margin-right: 20px;
 }
 </style>

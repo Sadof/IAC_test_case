@@ -39,7 +39,6 @@ class ProductFixture extends Fixture
             $product->setProductColor($colors[rand(0 , count($colors) - 1)]);
             $product->setProductCategory($categories[rand(0 , count($categories) - 1)]);
             $product->setImage($images[rand(0 , count($images) - 1)]);
-            $product->setBlob("get");
             
             $manager->persist($product);
             $manager->flush();

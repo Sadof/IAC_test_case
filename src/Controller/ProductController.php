@@ -4,7 +4,7 @@ namespace App\Controller;
 
 
 use App\Service\ProductService;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\DBAL\Exception\DriverException;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -45,22 +45,22 @@ class ProductController extends AbstractController
         ProductService $product_service
     ): JsonResponse {
 
-        if (!$this->isCsrfTokenValid('product_edit', $request->request->get('csrf_token'))) {
+        if (!$this->isCsrfTokenValid('product_edit', $request->get('csrf_token'))) {
             throw $this->createNotFoundException('The CSRF token is invalid. Please try to resubmit the form');
         }
 
-        if (!empty($request->request->get("id"))) {
+        if (!empty($request->get("id"))) {
             if (!in_array('ROLE_EDIT', $this->getUser()->getRoles(), true)) {
                 throw $this->createAccessDeniedException('Недостаточно прав для редактирования продукта');
             }
         } else {
             if (!in_array('ROLE_ADD', $this->getUser()->getRoles(), true)) {
-                throw $this->createAccessDeniedException('Недостаточно прав для редактирования продукта');
+                throw $this->createAccessDeniedException('Недостаточно прав для добавления продукта');
             }
         }
-
+        
         try {
-            $response = $product_service->fillProduct($request);
+            $response = $product_service->createUpdateProduct($request);
         } catch (TypeError $e) {
             $logger->error($e, ["user" => $this->getUser()]);
             return $this->response("Ошибка создания продукта", 404);
@@ -74,9 +74,18 @@ class ProductController extends AbstractController
 
     #[Route('/api/data_list', name: 'api_data_list')]
     #[IsGranted('ROLE_LIST_VIEW')]
-    public function getProducts(Request $request, ProductService $product_service): JsonResponse
+    public function getProducts(Request $request, LoggerInterface $logger, ProductService $product_service): JsonResponse
     {
-        $data = $product_service->getProducts($request);
+        try {
+            $data = $product_service->getProducts($request);
+        } catch (DriverException $e) {
+            $logger->error($e, ["user" => $this->getUser()]);
+            return $this->response("Ошибка при получении продуктов", 404);
+        } catch (Exception $e) {
+            $logger->error($e, ["user" => $this->getUser()]);
+            return $this->response("Ошибка при получении продуктов", 404);
+        }
+
         return $this->response($data);
     }
 
@@ -115,9 +124,14 @@ class ProductController extends AbstractController
 
     #[Route('/api/data_list_additional_data', name: 'api_data_list_additional_data')]
     #[IsGranted('ROLE_USER')]
-    public function getAdditionalData(ProductService $product_service): JsonResponse
+    public function getAdditionalData(ProductService $product_service, LoggerInterface $logger): JsonResponse
     {
-        $data = $product_service->getAdditionalData();
+        try {
+            $data = $product_service->getAdditionalData();
+        } catch (\Throwable $e) {
+            $logger->error($e, ["user" => $this->getUser()]);
+            return $this->response("Ошибка создания продукта", 404);
+        }
 
         return $this->response($data);
     }
@@ -137,13 +151,13 @@ class ProductController extends AbstractController
             $logger->error($e, ["user" => $this->getUser()]);
             return $this->response("Ошибка создания продукта", 404);
         }
-        
+
         return new \Symfony\Component\HttpFoundation\Response(
             stream_get_contents($product->getBlob()),
             200,
             array(
                 'Content-Type' => 'application/octet-stream',
-                'Content-Disposition' => 'attachment; filename="' . $product->getBlobName() .'"',
+                'Content-Disposition' => 'attachment; filename="' . $product->getBlobName() . '"',
             )
         );
     }

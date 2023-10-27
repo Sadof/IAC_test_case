@@ -51,16 +51,13 @@ class Product
     private ?ProductColor $product_color = null;
 
     #[ORM\Column(length: 1000, nullable: true)]
-    #[Groups(['conference:item'])]
     private ?string $image = null;
 
     #[ORM\Column(type: Types::BLOB, nullable: true)]
-    #[Groups(['conference:item'])]
     #[ignore]
     private $blob = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['conference:list', 'conference:item'])]
     private ?float $weight = null;
 
     #[ORM\Column(length: 255, nullable: true)]

@@ -1,10 +1,11 @@
 <template>
   <div class="product_table_page" id="product_table_page">
     <Header></Header>
-    <div class="buttons_row">
+    <div class="buttons_row my-3">
       <Button v-if="userCanAdd" :url="'/product/create'">Добавить</Button>
       <Button
         v-if="userCanEdit"
+        :disabled="disableButtons"
         :emit="'updateButtonClick'"
         :url="updateButtonUrl"
         >Редактировать</Button
@@ -23,30 +24,35 @@
         :table_fields="table_fields"
         v-on:search="search"
       ></ProductTableSearchForm>
-      <div
-        class="product_table"
+      <table
+        class="table"
         :class="userCanEdit || userCanDelete ? 'clickable' : ''"
       >
-        <div class="product_table_header">
-          <div
-            class="product_table_header_item"
-            v-for="(item, field) in table_fields"
-            :key="'header_' + field"
-            @click="sortBy(field)"
+        <thead>
+          <tr class="product_table_header">
+            <th
+              class="product_table_header_item"
+              v-for="(item, field) in table_fields"
+              :key="'header_' + field"
+              :class="field == sort_field ? (order == 1 ? 'down' : 'up') : ''"
+              @click="sortBy(field, $event)"
+            >
+              {{ item.translastion }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <ProductTableRow
+            v-for="product in products"
+            :item="product"
+            :index="product.id"
+            :key="product.id"
+            :highlightedRow="highlightedRow"
+            v-on:setSelectedRow="setSelectedRow"
           >
-            {{ item.translastion }}
-          </div>
-        </div>
-        <ProductTableRow
-          v-for="product in products"
-          :item="product"
-          :index="product.id"
-          :key="product.id"
-          :highlightedRow="highlightedRow"
-          v-on:setSelectedRow="setSelectedRow"
-        >
-        </ProductTableRow>
-      </div>
+          </ProductTableRow>
+        </tbody>
+      </table>
       <Pagination
         :page="page"
         :max_entities="max_entities"
@@ -55,7 +61,7 @@
       ></Pagination>
     </template>
     <template v-else>
-      <div>У пользователя нету прав для просмотра таблицы</div>
+      <div class="no_rights">У пользователя нету прав для просмотра таблицы</div>
     </template>
   </div>
 </template>
@@ -67,6 +73,7 @@ import ProductTableSearchForm from "../components/ProductTableSearchForm.vue";
 import Pagination from "../components/Pagination.vue";
 import Button from "../components/Button.vue";
 import Header from "../components/Header.vue";
+import ProductConstants from "../constants/products";
 
 export default {
   components: {
@@ -79,48 +86,15 @@ export default {
   data: () => ({
     user_roles: [],
     products: {},
-    table_fields: {
-      short_description: {
-        translastion: "Краткое описание",
-        search_type: "string",
-      },
-      description: {
-        translastion: "Описание",
-        search_type: "string",
-      },
-      amount: {
-        translastion: "Количество",
-        search_type: "int",
-      },
-      weight: {
-        translastion: "Вес",
-        search_type: "float",
-      },
-      added_to_store: {
-        translastion: "Добавлено в магазин",
-        search_type: "date",
-      },
-      updated: {
-        translastion: "Обновлено",
-        search_type: "date",
-      },
-      product_color: {
-        translastion: "Цвет продукта",
-        search_type: "select",
-        select_values: {},
-      },
-      product_category: {
-        translastion: "Категория",
-        search_type: "select",
-        select_values: {},
-      },
-    },
+    table_fields: structuredClone(ProductConstants.table_fields),
     table_loading: false,
     page: 1,
     max_entities: 0,
     per_page: 0,
     selected_row: null,
     csrf: "",
+    sort_field: "",
+    order: "",
   }),
 
   mounted() {
@@ -175,15 +149,17 @@ export default {
     getDataList() {
       this.selected_row = null;
       const params = new URLSearchParams(window.location.search);
-
+      this.updateSortValues();
       axios.get("/api/data_list", { params }).then((response) => {
         var json = JSON.parse(response.data);
         this.products = json.data;
         this.max_entities = json.max_entities;
         this.per_page = json.per_page;
+      }).catch(()=>{
+        alert("Не удалось получить данные")
       });
     },
-    sortBy(field) {
+    sortBy(field, event) {
       var url = new URL(window.location);
 
       if (
@@ -206,6 +182,12 @@ export default {
       window.history.pushState({}, "", url);
 
       this.getDataList();
+    },
+
+    updateSortValues() {
+      var url = new URL(window.location);
+      this.sort_field = url.searchParams.get("sort_field");
+      this.order = url.searchParams.get("order");
     },
 
     search(data) {
@@ -270,21 +252,31 @@ export default {
 </script>
 
 <style scoped>
-.product_table {
-  display: table;
-}
-.product_table_header {
-  display: table-row;
-}
 .product_table_header_item {
-  display: table-cell;
-  padding: 10px;
   cursor: pointer;
 }
-</style>
+.product_table_header_item.down::after {
+  content: "\25bc";
+  color: gray;
+  position: absolute;
+}
+.product_table_header_item.up::after {
+  content: "\25bc";
+  color: gray;
+  position: absolute;
+  transform: rotate(180deg);
+}
+.product_table {
+  margin-top: 20px;
+}
 
-<style>
-.product_table.clickable .product-table-row {
-  cursor: pointer;
+.buttons_row {
+  padding: 5px 20px;
+}
+
+.no_rights{
+  margin-left: 20px;
+  font-size: 20px;
+  font-weight: 700;
 }
 </style>

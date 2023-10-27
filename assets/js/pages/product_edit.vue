@@ -1,61 +1,91 @@
 <template>
   <div class="product_edit_page">
     <Header></Header>
-    <form class="product_form" id="product_form" ref="product_form">
-      <div v-if="product.id">Изименить продукт</div>
-      <div v-else>Добавить новый продукт</div>
-      <div :class="response_message_class" class="response_message">
+    <b-form
+      id="product_form"
+      ref="product_form"
+      class="product_form mb-5"
+      @submit="sendRequest"
+    >
+      <div class="product_form_header mb-3 mt-3">
+        {{ product.id ? "Изменить продукт" : "Добавить новый продукт" }}
+      </div>
+
+      <div
+        :class="response_message_class"
+        class="response_message"
+        ref="response_message"
+      >
         <div v-for="(item, index) in response_message" :key="index">
           {{ item }}
         </div>
       </div>
-      <div class="product_form_item">
-        <label for="short_description">Краткое описание</label>
-        <textarea
-          type="text"
-          name="short_description"
+      <b-form-group label="Краткое описание" label-for="input-1" class="mb-3">
+        <b-form-textarea
+          id="short_description"
           v-model="product.short_description"
-        ></textarea>
-      </div>
-
-      <div class="product_form_item">
-        <label for="description">Описание</label>
-        <textarea name="description" v-model="product.description"></textarea>
-      </div>
-
-      <div class="product_form_item">
-        <label for="amount"
-          >Количество (Обязательное поле для заполнения)</label
-        >
-        <input
-          type="number"
-          name="amount"
-          id="amount"
+          placeholder=""
+          rows="3"
+          max-rows="6"
+          name="short_description"
+        ></b-form-textarea>
+      </b-form-group>
+      <b-form-group label="Описание" label-for="description" class="mb-3">
+        <b-form-textarea
+          id="description"
+          v-model="product.description"
+          placeholder=""
+          rows="3"
+          max-rows="6"
+          name="description"
+        ></b-form-textarea>
+      </b-form-group>
+      <b-form-group
+        label="Количество (Обязательное поле для заполнения)"
+        label-for="amount"
+        class="mb-3"
+      >
+        <b-form-input
           v-model="product.amount"
+          placeholder=""
+          type="number"
           :class="{ error: errors.amount }"
-        />
-      </div>
+          id="amount"
+          name="amount"
+        ></b-form-input>
+      </b-form-group>
 
-      <div class="product_form_item">
-        <label for="weight">Вес</label>
-        <input type="number" name="weight" v-model="product.weight" />
-      </div>
+      <b-form-group label="Вес" label-for="weight">
+        <b-form-input
+          v-model="product.weight"
+          placeholder=""
+          type="number"
+          id="weight"
+          class="mb-3"
+          name="weight"
+        ></b-form-input>
+      </b-form-group>
 
-      <div class="product_form_item">
-        <label for="added_to_store">Добавлено в магазин</label>
+      <b-form-group
+        label="Добавлено в магазин"
+        label-for="added_to_store"
+        class="mb-3"
+      >
         <date-picker
           v-model="product.added_to_store"
           type="date"
           format="YYYY-MM-DD"
           value-type="format"
           :input-attr="{ name: 'added_to_store' }"
+          id="added_to_store"
         ></date-picker>
-      </div>
+      </b-form-group>
 
-      <div class="product_form_item">
-        <label for="updated"
-          >Обновлено (Обязательное поле для заполнения)</label
-        >
+      <b-form-group
+        label="Обновлено (Обязательное поле для заполнения)"
+        label-for="updated"
+        class="mb-3"
+      >
         <date-picker
           v-model="product.updated"
           type="datetime"
@@ -65,92 +95,76 @@
           :input-class="[errors.updated ? 'mx-input error' : 'mx-input']"
           :input-attr="{ name: 'updated' }"
         ></date-picker>
-      </div>
+      </b-form-group>
 
-      <div class="product_form_item">
-        <label for="product_color">Цвет продукта</label>
-        <select
+      <b-form-group
+        label="Цвет продукта"
+        label-for="product_color"
+        class="mb-3"
+      >
+        <b-form-select
           v-model="product.product_color"
+          class="mb-3"
+          :options="product_colors"
+          value-field="id"
+          text-field="name"
           name="product_color"
-          id="product_color"
-          value=""
         >
-          <option value="" selected>Не выбрано</option>
-          <option
-            v-for="item in product_colors"
-            :key="item.id"
-            :value="item.id"
-            :selected="item == product.product_color"
-          >
-            {{ item.name }}
-          </option>
-        </select>
-      </div>
+          <b-form-select-option :value="''">Не выбрано</b-form-select-option>
+        </b-form-select>
+      </b-form-group>
 
-      <div class="product_form_item">
-        <label for="product_category">Категория</label>
-        <select
+      <b-form-group label="Категория" label-for="product_category" class="mb-3">
+        <b-form-select
           v-model="product.product_category"
+          class="mb-3"
+          :options="product_categories"
+          value-field="id"
+          text-field="name"
           name="product_category"
-          id="product_category"
-          value=""
         >
-          <option value="" selected>Не выбрано</option>
-          <option
-            v-for="item in product_categories"
-            :key="item.id"
-            :selected="item == product.product_category"
-            :value="item.id"
-          >
-            {{ item.name }}
-          </option>
-        </select>
-      </div>
-      <div class="product_form_item">
-        <img
-          v-if="product.image"
-          :src="product.image"
-          alt=""
-          class="image_preview"
-        />
-        <label for="image"
-          >Изображение(с расширением .png, .jpg, .jpeg и размером менее 2
-          МБ)</label
-        >
-        <input
-          type="file"
-          name="image"
-          id="image"
+          <b-form-select-option :value="''">Не выбрано</b-form-select-option>
+        </b-form-select>
+      </b-form-group>
+
+      <b-form-group
+        label="Превью"
+        label-for="product_category"
+        class="mb-3"
+        v-if="product.image"
+      >
+        <b-img :src="product.image" fluid alt="Responsive image"></b-img>
+      </b-form-group>
+
+      <b-form-group
+        label="Изображение(с расширением .png, .jpg, .jpeg и размером менее 2
+          МБ)"
+        label-for="product_category"
+        class="mb-3"
+      >
+        <b-form-file
           ref="image_input"
           accept=".png, .jpg, .jpeg"
-        />
-      </div>
-      <div class="product_form_item">
-        <label for="blob">Вложение</label>
-        <div class="product_form_item_blob" v-if="product.blob_name">
-          <div class="product_form_item_blob_name">{{ product.blob_name }}</div>
-          <div class="product_form_item_blob_download"> <a :href="'/api/get_data_blob/' + product.id">Download</a></div>
-        </div>
-        <input type="file" name="blob" id="blob" ref="blob_input" />
-      </div>
+          name="image"
+        ></b-form-file>
+      </b-form-group>
 
-      <button
-        v-if="product.id"
+      <b-form-group label="Вложение" label-for="product_category" class="mb-3">
+        <div class="product_form_item_blob_download">
+          <a :href="'/api/get_data_blob/' + product.id">Download</a>
+        </div>
+        <div class="product_form_item_blob_name">{{ product.blob_name }}</div>
+        <b-form-file ref="blob_input" name="blob"></b-form-file>
+      </b-form-group>
+
+      <b-button
         type="submit"
+        variant="success"
         @click.prevent="sendRequest"
         ref="product_form_submit"
+        >{{ product.id ? "Изменить" : "Добавить" }}</b-button
       >
-        Изменить
-      </button>
-      <button
-        v-else
-        type="submit"
-        @click.prevent="sendRequest"
-        ref="product_form_submit"
-      >
-        Добавить
-      </button>
-    </form>
+    </b-form>
   </div>
 </template>
 
@@ -159,6 +173,7 @@ import axios from "axios";
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
 import Header from "../components/Header.vue";
+import ProductConstants from "../constants/products";
 
 export default {
   components: {
@@ -167,20 +182,7 @@ export default {
   },
 
   data: () => ({
-    product: {
-      id: "",
-      short_description: "",
-      description: "",
-      amount: "",
-      weight: "",
-      added_to_store: "",
-      updated: "",
-      product_color: "",
-      product_category: "",
-      image: "",
-      blob: "",
-      blob_name: "",
-    },
+    product: structuredClone(ProductConstants.empty_product),
     product_colors: [],
     product_categories: [],
     csrf: "",
@@ -209,20 +211,7 @@ export default {
 
   methods: {
     setEmptyProduct() {
-      this.product = {
-        id: "",
-        short_description: "",
-        description: "",
-        amount: "",
-        weight: "",
-        added_to_store: "",
-        updated: "",
-        product_color: "",
-        product_category: "",
-        image: "",
-        blob: "",
-        blob_name: "",
-      };
+      this.product = structuredClone(ProductConstants.empty_product);
     },
     setProduct(data) {
       this.product = {
@@ -275,7 +264,10 @@ export default {
         this.response_message_class = "error";
       }
 
-      if (this.response_message.length) return;
+      if (this.response_message.length) {
+        this.$refs.response_message.scrollIntoView();
+        return;
+      }
       const formData = new FormData(
         this.$refs.product_form,
         this.$refs.product_form_submit
@@ -311,6 +303,7 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+      this.$refs.response_message.scrollIntoView();
     },
 
     loadProduct() {
@@ -338,35 +331,19 @@ export default {
 .product_form {
   display: flex;
   flex-direction: column;
-  width: 400px;
+  width: 720px;
   margin: auto;
 }
 
-.product_form_item {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 10px;
-}
-.response_message {
-  font-size: 20px;
-}
-.response_message.success {
-  color: green;
-}
-.response_message.error {
-  color: red;
+.product_form_header {
+  margin: auto;
+  font-weight: 700;
+  font-size: 24px;
 }
 
-input.error {
-  border: 1px solid red;
-}
-</style>
-
-<style>
-.error.mx-input {
-  border: 1px solid red !important;
-}
-.product_form .mx-datepicker {
-  width: 100% !important;
+@media screen and (max-width: 720px) {
+  .product_form {
+    width: 100%;
+  }
 }
 </style>

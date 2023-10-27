@@ -151,10 +151,12 @@
       </b-form-group>
 
       <b-form-group label="Вложение" label-for="product_category" class="mb-3">
-        <div class="product_form_item_blob_download">
-          <a :href="'/api/get_data_blob/' + product.id">Download</a>
-        </div>
-        <div class="product_form_item_blob_name">{{ product.blob_name }}</div>
+        <template v-if="product.blob_name">
+          <div class="product_form_item_blob_download">
+            <a :href="'/api/get_data_blob/' + product.id">Download</a>
+          </div>
+          <div class="product_form_item_blob_name">{{ product.blob_name }}</div>
+        </template>
         <b-form-file ref="blob_input" name="blob"></b-form-file>
       </b-form-group>
 
@@ -313,19 +315,17 @@ export default {
         this.response_message_class = "error";
         this.errors.amount = true;
       } else {
-        if (this.product.amount < 0 ){
+        if (this.product.amount < 0) {
           this.response_message.push(
-          'Поле "Количество" не может быть отрицательным'
-        );
-        this.response_message_class = "error";
-        this.errors.amount = true;
+            'Поле "Количество" не может быть отрицательным'
+          );
+          this.response_message_class = "error";
+          this.errors.amount = true;
         }
       }
 
-      if (this.product.weight && this.product.weight < 0){
-        this.response_message.push(
-          'Поле "Вес" не может быть отрицательным'
-        );
+      if (this.product.weight && this.product.weight < 0) {
+        this.response_message.push('Поле "Вес" не может быть отрицательным');
         this.response_message_class = "error";
         this.errors.weight = true;
       }

@@ -61,6 +61,7 @@
           placeholder=""
           type="number"
           id="weight"
+          :class="{ error: errors.weight }"
           class="mb-3"
           name="weight"
         ></b-form-input>
@@ -241,28 +242,7 @@ export default {
       this.response_message = [];
       this.response_message_class = "";
       this.setEmptyErrors();
-      this;
-      if (!this.product.amount) {
-        this.response_message.push(
-          'Не заполнено обязательное поле "Количество"'
-        );
-        this.response_message_class = "error";
-        this.errors.amount = true;
-      }
-      if (!this.product.updated) {
-        this.response_message.push(
-          'Не заполнено обязательное поле "Обновлено"'
-        );
-        this.response_message_class = "error";
-        this.errors.updated = true;
-      }
-      if (
-        this.$refs.image_input.files[0] &&
-        !this.checkImageFile(this.$refs.image_input.files[0])
-      ) {
-        this.response_message.push("Изображение не соответствует требованиям");
-        this.response_message_class = "error";
-      }
+      this.validateForm();
 
       if (this.response_message.length) {
         this.$refs.response_message.scrollIntoView();
@@ -322,6 +302,47 @@ export default {
       return (
         file.size / 1024 / 1024 < 2 && validImageTypes.includes(file["type"])
       );
+    },
+
+    validateForm() {
+      this;
+      if (!this.product.amount) {
+        this.response_message.push(
+          'Не заполнено обязательное поле "Количество"'
+        );
+        this.response_message_class = "error";
+        this.errors.amount = true;
+      } else {
+        if (this.product.amount < 0 ){
+          this.response_message.push(
+          'Поле "Количество" не может быть отрицательным'
+        );
+        this.response_message_class = "error";
+        this.errors.amount = true;
+        }
+      }
+
+      if (this.product.weight && this.product.weight < 0){
+        this.response_message.push(
+          'Поле "Вес" не может быть отрицательным'
+        );
+        this.response_message_class = "error";
+        this.errors.weight = true;
+      }
+      if (!this.product.updated) {
+        this.response_message.push(
+          'Не заполнено обязательное поле "Обновлено"'
+        );
+        this.response_message_class = "error";
+        this.errors.updated = true;
+      }
+      if (
+        this.$refs.image_input.files[0] &&
+        !this.checkImageFile(this.$refs.image_input.files[0])
+      ) {
+        this.response_message.push("Изображение не соответствует требованиям");
+        this.response_message_class = "error";
+      }
     },
   },
 };

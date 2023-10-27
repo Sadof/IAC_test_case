@@ -210,6 +210,13 @@ class ProductService
      */
     public function fillProduct(Product $product, array $product_data): Product
     {
+        if ($product_data["amount"] && $product_data["amount"] < 0){
+            return Exception ("Amount cannot be negative");
+        }
+        if ($product_data["weight"] && $product_data["weight"] < 0){
+            return Exception ("Weight cannot be negative");
+        }
+
         $product->setShortDescription($product_data["short_description"] ? $product_data["short_description"] : null);
         $product->setDescription($product_data["description"] ? $product_data["short_description"] : null);
         $product->setAmount($product_data["amount"] ? $product_data["amount"] : null);

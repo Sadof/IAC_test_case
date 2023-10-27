@@ -158,6 +158,7 @@ export default {
       }).catch(()=>{
         alert("Не удалось получить данные")
       });
+      this.getPage();
     },
     sortBy(field, event) {
       var url = new URL(window.location);

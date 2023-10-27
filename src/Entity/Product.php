@@ -13,14 +13,6 @@ use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\Table(name: '`product`')]
-#[ApiResource(
-    operations: [
-        new Get(normalizationContext: ['groups' => 'data:item']),
-        new GetCollection(normalizationContext: ['groups' => 'data:list'])
-    ],
-    order: ['id' => 'DESC'],
-    paginationEnabled: false,
-)]
 
 class Product
 {
